@@ -5,7 +5,7 @@ ob_start();
 ?>
 
 <h1>User list</h1>
-<a href="" class="btn btn-success">Create user</a>
+<a href="?page=users&action=create" class="btn btn-success">Create user</a>
 <table class="table">
     <thead>
         <tr>
@@ -32,5 +32,5 @@ ob_start();
     </tbody>
 </table>
 <?php $content = ob_get_clean();
-include 'app/views/layout.php';
+include __DIR__ . '/../layout.php'; ?>
 ?>
