@@ -2,6 +2,7 @@
 
 
 require_once __DIR__ . '/controllers/user/UserController.php';
+require_once __DIR__ . '/controllers/HomeController.php';
 require_once __DIR__ . '/helpers.php';
 class Router
 {
@@ -10,6 +11,11 @@ class Router
         $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 
         switch ($page) {
+            case '':
+            case 'home':
+                $controller = new HomeController();
+                $controller->index();
+                break;
             case 'users':
                 $controller = new UserController();
                 if (isset($_GET['action'])){
@@ -19,6 +25,15 @@ class Router
                             break;
                         case 'store':
                             $controller->store();
+                            break;
+                        case 'edit':
+                            $controller->edit();
+                            break;
+                        case 'delete':
+                            $controller->delete();
+                            break;
+                        case 'update':
+                            $controller->update();
                             break;
                     }
                 } else {

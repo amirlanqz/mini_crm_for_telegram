@@ -7,7 +7,7 @@
 <body>
 <div class="container">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a href="#" class="navbar-brand">crm_for_telegram</a>
+        <a href="" class="navbar-brand">Crm_for_telegram</a>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">

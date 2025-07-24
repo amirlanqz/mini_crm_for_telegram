@@ -30,4 +30,28 @@ class UserController
         }
         header("Location: ?page=users");
     }
+
+
+    public function edit()
+    {
+            $userModel = new User();
+            $user = $userModel->read($_GET['id']);
+            include __DIR__ . '/../../views/users/edit.php';
+    }
+
+    public function update()
+    {
+        $userModel = new User();
+        $userModel->update($_GET['id'], $_POST);
+        header("Location: ?page=users");
+    }
+    public function delete()
+    {
+        $userModel = new User();
+        $userModel->delete($_GET['id']);
+
+        if ($userModel) {
+            header("Location: ?page=users");
+        }
+    }
 }
