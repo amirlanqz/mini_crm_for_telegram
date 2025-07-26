@@ -9,6 +9,24 @@ class User
     public function __construct()
     {
         $this->db = Database::getInstance()->getConnection();
+        try {
+            $result = $this->db->query("SELECT 1 FROM users limit 1");
+        } catch (PDOException $e) {
+            $this->createTable();
+        }
+    }
+
+    public function createTable(): bool
+    {
+        $query = "CREATE TABLE IF NOT EXISTS `users` (
+            `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `login` VARCHAR(255) NOT NULL,
+            `password` VARCHAR(255) NOT NULL,
+            `is_admin` TINYINT(1) NOT NULL DEFAULT '0',
+            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )";
+        $this->db->exec($query);
+        return true;
     }
 
     public function readAll() {
@@ -54,7 +72,7 @@ class User
     {
         $stmt =  $this->db->prepare("SELECT * FROM users where id = ?");
         $stmt->execute([$id]);
-        $user = $stmt->fetch();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
         return $user;
     }
 
