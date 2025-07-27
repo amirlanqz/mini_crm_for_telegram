@@ -18,19 +18,40 @@ class User
 
     public function createTable(): bool
     {
-        $query = "CREATE TABLE IF NOT EXISTS `users` (
-            `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            `login` VARCHAR(255) NOT NULL,
-            `password` VARCHAR(255) NOT NULL,
-            `is_admin` TINYINT(1) NOT NULL DEFAULT '0',
-            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        $roleTableQuery = "CREATE TABLE IF NOT EXISTS roles (
+        id int(11) not null auto_increment primary key,
+        role_name varchar(255) not null,
+        role_description text
     )";
-        $this->db->exec($query);
-        return true;
+
+        $userTableQuery = "CREATE TABLE IF NOT EXISTS users (
+        id int(11) not null auto_increment,
+        username varchar(255) not null,
+        email varchar(255) not null unique,
+        email_verification tinyint(1) not null default 0,
+        password varchar(255) not null,
+        is_admin tinyint(1) not null default 0,
+        role_id int(11) not null,
+        is_active tinyint(1) not null default 1,
+        last_login timestamp null,
+        created_at timestamp default current_timestamp,
+        primary key (id),
+        foreign key (role_id) references roles(id) 
+    )";
+
+        try {
+            $this->db->exec($roleTableQuery);
+            $this->db->exec($userTableQuery);
+            return true;
+        } catch (PDOException $e) {
+            return false;
+        }
     }
 
+
+
     public function readAll() {
-        $results =  $this->db->query("SELECT id, login, is_admin, created_at FROM users order by id asc");
+        $results =  $this->db->query("SELECT u.*, r.role_name FROM users u join roles r on u.role_id = r.id");
         $users = [];
 //        while($row = $result->fetch()){
 //            $users[] = $row;
@@ -43,13 +64,14 @@ class User
 
     public function create($data): bool
     {
-        $login = $data['login'];
+        $username = $data['username'];
         $password = password_hash($data['password'], PASSWORD_DEFAULT);
-        $isAdmin = isset($data['is_admin']) && $data['is_admin'] === 1 ? 1 : 0;
+        $email = $data['email'];
+        $roleId = $data['role_id'];
         $createdAt = date('Y-m-d H:i:s');
 
-        $stmt = $this->db->prepare("INSERT INTO users (login, password, is_admin, created_at) VALUES (?,?,?,?)");
-        if ($stmt->execute([$login, $password, $isAdmin, $createdAt])) {
+        $stmt = $this->db->prepare("INSERT INTO users (username, email, password, role_id, created_at) VALUES (?,?,?,?,?)");
+        if ($stmt->execute([$username, $email, $password, $roleId, $createdAt])) {
             return true;
         } else {
             return false;
@@ -77,10 +99,11 @@ class User
     }
 
     public function update($id, $data) {
-        $login = $data['login'];
-        $isAdmin = isset($data['is_admin']) ? (int)$data['is_admin'] : 0;
-        $stmt = $this->db->prepare("UPDATE users SET login = ?, is_admin = ? WHERE id = ?");
-        if ($stmt->execute([$login, $isAdmin, $id])) {
+        $username = $data['username'];
+        $email = $data['email'];
+        $role_id = $data['role_id'];
+        $stmt = $this->db->prepare("UPDATE users SET username = ?, email = ?, role_id = ? WHERE id = ?");
+        if ($stmt->execute([$username, $email, $role_id, $id])) {
             return true;
         } else {
             return false;
