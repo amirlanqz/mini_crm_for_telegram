@@ -48,8 +48,7 @@ class User
         }
     }
 
-
-
+    
     public function readAll() {
         $results =  $this->db->query("SELECT u.*, r.role_name FROM users u join roles r on u.role_id = r.id");
         $users = [];
