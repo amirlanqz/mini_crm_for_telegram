@@ -49,14 +49,13 @@ class AuthUser
 
 
 
-    public function register($username, $email, $password)
+    public function register($data)
     {
         $created_at = date('Y-m-d H:i:s');
-
-        $query = "INSERT INTO users (username, email, password, created_at) values (?,?,?,?)";
+        $query = "INSERT INTO users (username, email, password, role_id, created_at) values (?,?,?,?,?)";
         try {
             $stmt = $this->db->prepare($query);
-            $stmt->execute([$username, $email, $password, $created_at]);
+            $stmt->execute([$data['username'], $data['email'], $data['password'], 1, $created_at]);
             return true;
         } catch (PDOException $e) {
             return false;
@@ -76,11 +75,9 @@ class AuthUser
         }
     }
     public function findByEmail($email) {
-        $user = $this->db->prepare("SELECT * FROM users WHERE email = ?");
-        if ($user->execute([$email])) {
-            return $user;
-        } else {
-            return false;
-        }
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC); // Вернёт массив с данными пользователя
     }
 }

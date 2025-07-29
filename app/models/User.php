@@ -64,7 +64,7 @@ class User
     public function create($data): bool
     {
         $username = $data['username'];
-        $password = password_hash($data['password'], PASSWORD_DEFAULT);
+        $password = $data['password'];
         $email = $data['email'];
         $roleId = $data['role_id'];
         $createdAt = date('Y-m-d H:i:s');

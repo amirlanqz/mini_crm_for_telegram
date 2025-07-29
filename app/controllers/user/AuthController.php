@@ -11,22 +11,21 @@ class AuthController
     public function store(): void
     {
         if (isset($_POST['username']) && isset($_POST['password']) && isset($_POST['confirm_password']) && isset($_POST['email'])) {
-            $password = $_POST['password'];
-            $confirm_password = $_POST['confirm_password'];
+            $password = trim($_POST['password']);
+            $confirm_password = trim($_POST['confirm_password']);
             if ($password !== $confirm_password) {
                 echo 'Password did not match';
                 return;
             }
-            $userModel = new User();
+            $userModel = new AuthUser();
             $data = [
                 'username' => $_POST['username'],
                 'email' => $_POST['email'],
-                'password' => password_hash($password, PASSWORD_DEFAULT),
-                'role_id' => 1,
+                'password' => password_hash($password, PASSWORD_BCRYPT),
             ];
-            $userModel->create($data);
+            $userModel->register($data);
         }
-        header("Location: ?page=login");
+        header("Location: ?page=users");
     }
 
 
@@ -42,13 +41,19 @@ class AuthController
         if (isset($_POST['email']) && isset($_POST['password'])) {
             $email = $_POST['email'];
             $password = $_POST['password'];
+            $remember = isset($_POST['remember']) ? $_POST['remember'] : '';
 
             $user = $authModel->findByEmail($email);
 
-            if ($user && password_verify($password, $user->password)) {
+            if ($user && password_verify($password, $user['password'])) {
                 session_start();
-                $_SESSION['user_id'] = $user->id;
-                $_SESSION['user_role'] = $user->role_id;
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['user_role'] = $user['role_id'];
+
+                if ($remember == 'on') {
+                    setcookie('user_email', $email, time() + (86400 * 30), "/");
+                    setcookie('password', $password, time() + (86400 * 30), "/");
+                }
                 header("Location: ?page=home");
             } else {
                 echo 'Invalid email or password';
