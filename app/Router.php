@@ -2,6 +2,8 @@
 
 
 require_once __DIR__ . '/controllers/user/UserController.php';
+require_once __DIR__ . '/controllers/user/AuthController.php';
+require_once __DIR__ . '/controllers/roles/RoleController.php';
 require_once __DIR__ . '/controllers/HomeController.php';
 require_once __DIR__ . '/helpers.php';
 class Router

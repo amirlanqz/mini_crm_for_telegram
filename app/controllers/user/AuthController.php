@@ -43,7 +43,7 @@ class AuthController
             $password = $_POST['password'];
             $remember = isset($_POST['remember']) ? $_POST['remember'] : '';
 
-            $user = $authModel->findByEmail($email);
+            $user = $authModel->login($email, $password);
 
             if ($user && password_verify($password, $user['password'])) {
                 session_start();
